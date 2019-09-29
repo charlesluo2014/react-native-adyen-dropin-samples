@@ -36,6 +36,7 @@ export default class DropinSampple extends React.Component {
             ...e.data
         }
 
+        options.paymentMethod.recurringDetailReference=options.paymentMethod.storedPaymentMethodId
         SDK.pay_adyen_checkout_payments(options).then(res=>{
             if(!res.action){
                 alert("resultCode="+res.resultCode)
