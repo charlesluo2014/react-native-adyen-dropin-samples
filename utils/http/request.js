@@ -6,7 +6,7 @@ import Config from '../config'
 //const baseURL = Config.BASE_URL
 //const baseURL = 'https://naki-test.ngrok.io'
 //const baseURL = 'https://api-release.nakipower.com'
-const baseURL = 'https://api.zowalk.com'
+//const baseURL = 'https://api.zowalk.com'
 //const baseURL = 'https://naki-test.ngrok.io'
 //const baseURL = 'https://api-release.nakipower.com'
 //  const baseURL = 'https://api.zowalk.com'
@@ -17,7 +17,7 @@ const baseURL = 'https://api.zowalk.com'
 
 // const baseURL = 'http://192.168.5.92:8082'
 
-//const baseURL = 'http://192.168.2.140:8082'
+const baseURL = 'http://192.168.3.230:8082'
 
 export function api_request(config, options) {
   const pars = { ...config }

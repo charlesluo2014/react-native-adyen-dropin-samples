@@ -11,15 +11,22 @@
 #import <React/RCTEventEmitter.h>
 
 @interface RCT_EXTERN_MODULE(AdyenDropInPayment, NSObject)
+
++(BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
 //init payment config
-RCT_EXTERN_METHOD(initPaymentConfig:(NSString)publicKey env:(NSString *) env)
+RCT_EXTERN_METHOD(configPayment:(NSString)publicKey env:(NSString *) env)
 /**
   select paymentMethods and pay
  */
 RCT_EXTERN_METHOD(paymentMethods:(NSString)paymentMethodsJson)
 //use cardPaymentMethod
-RCT_EXTERN_METHOD(cardPaymentMethod:(NSString)paymentMethodsJson)
+RCT_EXTERN_METHOD(cardPaymentMethod:(NSString)paymentMethodsJson name:(NSString *) name showHolderField:(BOOL) showHolderField showStoreField:(BOOL) showStoreField)
 
+//use stored card
+RCT_EXTERN_METHOD(storedCardPaymentMethod:(NSString)paymentMethodsJson index:(NSInteger *) index)
 RCT_EXTERN_METHOD(handleDropInAction:(NSString)actionJson)
 //.redirect: Use the Redirect Component or handle the redirect on your own.
 RCT_EXTERN_METHOD(handleRedirectAction:(NSString)actionJson)

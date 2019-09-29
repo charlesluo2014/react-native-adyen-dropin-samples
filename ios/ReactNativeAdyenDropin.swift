@@ -13,7 +13,7 @@ import Adyen
   
   @objc(applicationDidOpenURL:)
   static func applicationDidOpen(_ url: URL) -> Bool {
-    let adyenHandled = RedirectComponent.applicationDidOpen( url)
+    let adyenHandled = RedirectComponent.applicationDidOpen( from: url)
     return true
   }
 }

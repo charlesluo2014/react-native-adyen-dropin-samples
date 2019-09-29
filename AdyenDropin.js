@@ -1,19 +1,26 @@
-import { NativeEventEmitter, NativeModules } from 'react-native'
+import {NativeEventEmitter, NativeModules} from 'react-native';
 
-const AdyenDropIn = NativeModules.AdyenDropInPayment || NativeModules.AdyenDropInPayment
-const events = new NativeEventEmitter(AdyenDropIn)
-let onPaymentProvideListener
-let onPaymentResultListener
-let onPaymentFailListener
-let onPaymentSubmitListener
-
+const AdyenDropIn = NativeModules.AdyenDropInPayment;
+const EventEmitter = new NativeEventEmitter(AdyenDropIn);
+const eventMap = {};
+let onPaymentProvideListener;
+let onPaymentFailListener;
+let onPaymentSubmitListener;
+let onPaymentCancelListener;
+const addListener = (key, listener) => {
+    if (eventMap[key]) {
+        return eventMap[key];
+    }
+    eventMap[key] = listener;
+    EventEmitter.addListener(key,listener);
+};
 export default {
     /**
      * Starting payment process.
      * @returns {*}
      */
-    initPaymentConfig(publicKey) {
-        return AdyenDropIn.initPaymentConfig(publicKey)
+    configPayment(publicKey, env) {
+        return AdyenDropIn.configPayment(publicKey, env);
     },
     /**
      * list paymentMethods
@@ -23,85 +30,112 @@ export default {
      * @returns {*}
      */
     paymentMethods(paymentMethodJson) {
-        this._validateParam(paymentMethodJson, 'initPaymentMethods', 'string')
-        return AdyenDropIn.paymentMethods(paymentMethodJson)
+        this._validateParam(paymentMethodJson, 'paymentMethods', 'string');
+        return AdyenDropIn.paymentMethods(paymentMethodJson);
+    },
+    cardPaymentMethod(paymentMethodJson, name, showHolderField, showStoreField) {
+        this._validateParam(paymentMethodJson, 'cardPaymentMethod', 'string');
+        showHolderField = showHolderField || false;
+        showStoreField = showStoreField || false;
+        return AdyenDropIn.cardPaymentMethod(paymentMethodJson, name, showHolderField, showStoreField);
+    },
+    /**
+     * use card paymentMethod
+     * @param paymentMethodJson
+     * @returns {*}
+     */
+    storedCardPaymentMethod(paymentMethodJson, index) {
+        this._validateParam(paymentMethodJson, 'storedCardPaymentMethod', 'string');
+        index = index || 0;
+        return AdyenDropIn.storedCardPaymentMethod(paymentMethodJson, index);
     },
     /**
      * handle Action from payments
      * @param actionJson
      * @returns {*}
      */
-    handleAction(actionJson) {
-        this._validateParam(actionJson, 'handleAction', 'string')
-        return AdyenDropIn.handleAction(actionJson)
+    handleDropInAction(actionJson) {
+        this._validateParam(actionJson, 'handleDropInAction', 'string');
+        return AdyenDropIn.handleDropInAction(actionJson);
+    },
+    handleRedirectAction(actionJson) {
+        this._validateParam(actionJson, 'handleRedirectAction', 'string');
+        return AdyenDropIn.handleRedirectAction(actionJson);
+    },
+    handleThreeDS2FingerprintAction(actionJson) {
+        this._validateParam(actionJson, 'handleThreeDS2FingerprintAction', 'string');
+        return AdyenDropIn.handleThreeDS2FingerprintAction(actionJson);
+    },
+    handleThreeDS2ChallengeAction(actionJson) {
+        this._validateParam(actionJson, 'handleThreeDS2ChallengeAction', 'string');
+        return AdyenDropIn.handleThreeDS2ChallengeAction(actionJson);
     },
 
     encryptCard(cardData, publicKey) {
-        return AdyenDropIn.encryptCard(cardData, publicKey)
+        return AdyenDropIn.encryptCard(cardData, publicKey);
     },
     /**
-     * @callback mOnRequestPaymentSession
-     * @param {String} token
-     * @param {String} returnUrl
-     */
-    /**
-     * Native event. Calling when CheckoutController calls delegate in the native call.
-     * It calling with token and returnUrl (can be empty, no worries)
-     * @param {mOnRequestPaymentSession} mOnRequestPaymentSession
+     *  call when need to do more action
      */
     onPaymentProvide(mOnPaymentProvide) {
         this._validateParam(
             mOnPaymentProvide,
             'onPaymentProvide',
-            'function'
-        )
-        onPaymentProvideListener = events.addListener(
+            'function',
+        );
+        onPaymentProvideListener = addListener(
             'onPaymentProvide',
-            response => {
-                mOnPaymentProvide(response['token'], response['returnUrl'])
-            }
-        )
+            e => {
+                mOnPaymentProvide(e);
+            },
+        );
     },
+    // /**
+    //  * call when cancel a payment
+    //  * @param mOnPaymentCancel
+    //  */
+    // onPaymentCancel(mOnPaymentCancel) {
+    //     this._validateParam(
+    //         mOnPaymentCancel,
+    //         'onPaymentCancel',
+    //         'function',
+    //     );
+    //     onPaymentCancelListener = events.addListener(
+    //         'mOnPaymentCancel',
+    //         e => {
+    //             mOnPaymentCancel(e);
+    //         },
+    //     );
+    // },
     /**
-     * @callback mOnError
-     * @param {Number} code
-     * @param {String} message
-     */
-    /**
-     * If payment was cancelled or something else. Calling instead of onPaymentResult event.
+     * call when payment fail
      * @param {mOnError} mOnError
      */
     onPaymentFail(mOnPaymentFail) {
-        this._validateParam(mOnPaymentFail, 'onPaymentFail', 'function')
-        onPaymentFailListener = events.addListener('onPaymentFail', response => {
-            mOnPaymentFail(response['code'], response['message'])
-        })
+        this._validateParam(mOnPaymentFail, 'onPaymentFail', 'function');
+        onPaymentFailListener = addListener('onPaymentFail', e => {
+            mOnPaymentFail(e);
+        });
     },
     /**
-     * @callback mOnSelectPaymentMethod
-     * @param {Array<>} preferred
-     * @param {Array<>} other
-     * @param {number} count
-     */
-    /**
-     * //TODO custom integration
-     * @param {mOnSelectPaymentMethod} mOnSelectPaymentMethod
+     * call when payment submit ,send to server do payments
      */
     onPaymentSubmit(mOnPaymentSubmit) {
         this._validateParam(
             mOnPaymentSubmit,
             'onPaymentSubmit',
-            'function'
-        )
-        onPaymentSubmitListener = events.addListener(
-            'onPaymentSubmitListener;',
-            response => {
+            'function',
+        );
+        onPaymentSubmitListener = addListener(
+            'onPaymentSubmit',
+            e => {
                 mOnPaymentSubmit(
-                    response
-                )
-            }
-        )
+                    e,
+                );
+            },
+        );
     },
+
     /**
      * @param {*} param
      * @param {String} methodName
@@ -113,17 +147,24 @@ export default {
             throw new Error(
                 `Error: AdyenDropIn.${methodName}() requires a ${
                     requiredType === 'function' ? 'callback function' : requiredType
-                    } but got a ${typeof param}`
-            )
+                    } but got a ${typeof param}`,
+            );
         }
     },
-    events,
+    events: EventEmitter,
     removeListeners() {
-        if (onPaymentProvideListener)
-            onPaymentProvideListener.remove()
-        if (onPaymentResultListener) onPaymentResultListener.remove()
-        if (onPaymentFailListener) onPaymentFailListener.remove()
-        if (onPaymentSubmitListener)
-            onPaymentSubmitListener.remove()
+        if (onPaymentProvideListener) {
+            onPaymentProvideListener.remove();
+        }
+        if (onPaymentFailListener) {
+            onPaymentFailListener.remove();
+        }
+        if (onPaymentSubmitListener) {
+            onPaymentSubmitListener.remove();
+        }
+        if (onPaymentCancelListener) {
+            onPaymentCancelListener.remove();
+        }
+
     },
-}
+};

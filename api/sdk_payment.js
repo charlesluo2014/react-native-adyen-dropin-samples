@@ -3,6 +3,11 @@ const Api = {}
 Api['pay_adyen_checkout_payment_methods'] = {
     url: '/pay/adyen/checkout/payment_methods',
     method: 'POST',
+    requestBody: false,
+}
+Api['pay_adyen_checkout_payments'] = {
+    url: '/pay/adyen/checkout/payments',
+    method: 'POST',
     requestBody: true,
 }
 
