@@ -8,3 +8,8 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+-keep class com.adyen.checkout.base.model.** { *; }
+-keep class com.adyen.threeds2.** { *; }
+-keepclassmembers public class * implements com.adyen.checkout.base.PaymentComponent {
+   public <init>(...);
+}

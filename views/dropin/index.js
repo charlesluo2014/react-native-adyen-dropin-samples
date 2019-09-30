@@ -44,7 +44,7 @@ export default class DropinSampple extends React.Component {
             }
 
             console.log("action=====================",res.action)
-            //AdyenDropIn.handleDropInAction(res.action)
+            AdyenDropIn.handleAction(res.action)
             console.log("res=====================",res)
         }).catch(e=>{
             console.log("error=====================",e)

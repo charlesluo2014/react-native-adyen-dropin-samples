@@ -54,23 +54,10 @@ export default {
      * @param actionJson
      * @returns {*}
      */
-    handleDropInAction(actionJson) {
-        this._validateParam(actionJson, 'handleDropInAction', 'string');
-        return AdyenDropIn.handleDropInAction(actionJson);
+    handleAction(actionJson) {
+        this._validateParam(actionJson, 'handleAction', 'string');
+        return AdyenDropIn.handleAction(actionJson);
     },
-    handleRedirectAction(actionJson) {
-        this._validateParam(actionJson, 'handleRedirectAction', 'string');
-        return AdyenDropIn.handleRedirectAction(actionJson);
-    },
-    handleThreeDS2FingerprintAction(actionJson) {
-        this._validateParam(actionJson, 'handleThreeDS2FingerprintAction', 'string');
-        return AdyenDropIn.handleThreeDS2FingerprintAction(actionJson);
-    },
-    handleThreeDS2ChallengeAction(actionJson) {
-        this._validateParam(actionJson, 'handleThreeDS2ChallengeAction', 'string');
-        return AdyenDropIn.handleThreeDS2ChallengeAction(actionJson);
-    },
-
     encryptCard(cardData, publicKey) {
         return AdyenDropIn.encryptCard(cardData, publicKey);
     },

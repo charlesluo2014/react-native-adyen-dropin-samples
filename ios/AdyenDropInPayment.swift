@@ -236,7 +236,7 @@ extension AdyenDropInPayment: ActionComponentDelegate{
   
   
   
-  @objc func handleDropInAction(_ actionJson: String) {
+  @objc func handleAction(_ actionJson: String) {
     let actionData: Data? = actionJson.data(using: String.Encoding.utf8) ?? Data()
     let action = try? JSONDecoder().decode(Action.self, from: actionData!)
     dropInComponent?.handle(action!)
@@ -247,7 +247,7 @@ extension AdyenDropInPayment: ActionComponentDelegate{
     let redirectComponent:RedirectComponent = RedirectComponent(action: redirectAction as! RedirectAction)
     redirectComponent.delegate = self
   }
-  @objc func handleThreeDS2FingerprintAction(_ actionJson: String) {
+  func handleThreeDS2FingerprintAction(_ actionJson: String) {
     let actionData: Data? = actionJson.data(using: String.Encoding.utf8) ?? Data()
     let action = try? JSONDecoder().decode(Action.self, from: actionData!)
     if(self.threeDS2Component == nil){
@@ -257,7 +257,7 @@ extension AdyenDropInPayment: ActionComponentDelegate{
     }
     self.threeDS2Component!.handle(action as! ThreeDS2FingerprintAction)
   }
-  @objc func handleThreeDS2ChallengeAction(_ actionJson: String) {
+  func handleThreeDS2ChallengeAction(_ actionJson: String) {
     let actionData: Data? = actionJson.data(using: String.Encoding.utf8) ?? Data()
     let action = try? JSONDecoder().decode(Action.self, from: actionData!)
     if(self.threeDS2Component == nil){
