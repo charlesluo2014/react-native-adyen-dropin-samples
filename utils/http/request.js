@@ -17,7 +17,7 @@ import Config from '../config'
 
 // const baseURL = 'http://192.168.5.92:8082'
 
-const baseURL = 'http://192.168.3.230:8082'
+const baseURL = 'http://192.168.1.10:8082'
 
 export function api_request(config, options) {
   const pars = { ...config }
