@@ -200,7 +200,10 @@ extension AdyenDropInPayment: PaymentComponentDelegate{
   func didSubmit(_ data: PaymentComponentData, from component: PaymentComponent){
     self.cardComponent?.viewController.dismiss(animated: true)
     
-    let resultData = ["paymentMethod":data.paymentMethod.dictionaryRepresentation,"storePaymentMethod":data.storePaymentMethod] as [String : Any]
+    var paymentMethodMap:Dictionary? = data.paymentMethod.dictionaryRepresentation
+    paymentMethodMap!["recurringDetailReference"] = paymentMethodMap!["storedPaymentMethodId"]
+    let resultData = ["paymentMethod":paymentMethodMap,"storePaymentMethod":data.storePaymentMethod] as [String : Any]
+    
     self.sendEvent(
       withName: "onPaymentSubmit",
       body: [

@@ -124,8 +124,8 @@ public class AdyenDropInPayment extends ReactContextBaseJavaModule {
 
         // When you're ready to accept live payments, change the value to one of our live environments.
 
-        adyenDropInPayment.cardConfiguration = cardConfiguration;
-        PaymentMethod paymentMethod = adyenDropInPayment.getCardPaymentMethod(paymentMethodsApiResponse, name);
+        this.cardConfiguration = cardConfiguration;
+        final PaymentMethod paymentMethod = adyenDropInPayment.getCardPaymentMethod(paymentMethodsApiResponse, name);
 
 //        final CardView cardView = new CardView(adyenDropInPayment.getCurrentActivity());
 //        cardView.setVisibility(View.VISIBLE);
@@ -135,7 +135,8 @@ public class AdyenDropInPayment extends ReactContextBaseJavaModule {
         this.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final CardComponent cardComponent = CardComponent.PROVIDER.get((FragmentActivity) adyenDropInPayment.getCurrentActivity(), paymentMethod, cardConfiguration);
+                final CardComponent cardComponent =new CardComponent(paymentMethod,cardConfiguration);
+
                 CardComponentBottomSheet cardComponentDialogFragment = new CardComponentBottomSheet(adyenDropInPayment);
                 cardComponentDialogFragment.setPaymentMethod(paymentMethod);
                 cardComponentDialogFragment.setCardConfiguration(cardConfiguration);
@@ -175,11 +176,11 @@ public class AdyenDropInPayment extends ReactContextBaseJavaModule {
                         .build();
         this.cardConfiguration = cardConfiguration;
         final AdyenDropInPayment adyenDropInPayment = this;
-        PaymentMethod paymentMethod = this.getStoredCardPaymentMethod(paymentMethodsApiResponse, index);
+        RecurringDetail paymentMethod =  this.getStoredCardPaymentMethod(paymentMethodsApiResponse, index);
         this.getCurrentActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                final CardComponent cardComponent = CardComponent.PROVIDER.get((FragmentActivity) adyenDropInPayment.getCurrentActivity(), paymentMethod, cardConfiguration);
+                final CardComponent cardComponent =new CardComponent(paymentMethod,cardConfiguration);
                 CardComponentBottomSheet cardComponentDialogFragment = new CardComponentBottomSheet(adyenDropInPayment);
                 cardComponentDialogFragment.setPaymentMethod(paymentMethod);
                 cardComponentDialogFragment.setCardConfiguration(cardConfiguration);
@@ -224,7 +225,8 @@ public class AdyenDropInPayment extends ReactContextBaseJavaModule {
             PaymentMethodDetails paymentMethodDetails = paymentComponentState.getData().getPaymentMethod();
             JSONObject jsonObject = PaymentMethodDetails.SERIALIZER.serialize(paymentMethodDetails);
             try {
-                data.putMap("paymentMethod", convertJsonToMap(jsonObject));
+                WritableMap paymentMethodMap=convertJsonToMap(jsonObject);
+                data.putMap("paymentMethod", paymentMethodMap);
                 data.putBoolean("storePaymentMethod", paymentComponentState.getData().isStorePaymentMethodEnable());
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -311,7 +313,7 @@ public class AdyenDropInPayment extends ReactContextBaseJavaModule {
         return null;
     }
 
-    PaymentMethod getStoredCardPaymentMethod(PaymentMethodsApiResponse
+    RecurringDetail getStoredCardPaymentMethod(PaymentMethodsApiResponse
                                                      paymentMethodsApiResponse, Integer index) {
         List<RecurringDetail> recurringDetailList = paymentMethodsApiResponse.getStoredPaymentMethods();
         if (recurringDetailList == null || recurringDetailList.size() <= 0) {
